@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0c1414">
+  <meta name="description" content="Делаем Асгард — приложение для спортивных и исторических клубов. Расписание, запись на тренировки, взносы и деньги клуба. Напишите, чтобы попробовать одним из первых.">
+  <meta property="og:title" content="Асгард — тренировки и взносы вашего клуба">
+  <meta property="og:description" content="Бойцы видят расписание и свои оплаты. Организатор знает, кого ждать. Казначей ведёт клубные деньги. Готовим приложение к первому запуску.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <title>Асгард — тренировки и взносы вашего клуба</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="./assets/nordic-voyage.webp" as="image" media="(min-width: 701px)">
+  <link rel="stylesheet" href="./assets/fonts.css">
+  <link rel="stylesheet" href="./mobile.css">
+  <script src="./script.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">К содержимому</a>
+<svg class="symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+  <symbol id="mark" viewBox="0 0 64 64"><circle cx="32" cy="32" r="29" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M32 7v3m25 22h-3M32 57v-3M7 32h3" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 39V27l-5-5 3-7 7 3 3 7-5 2v13m-7-1c11 6 29 6 41-2l-7 11c-9 5-20 5-29-2Z" fill="currentColor"/><path d="M28 14v29" fill="none" stroke="currentColor" stroke-width="2"/><path d="M31 14h15l-4 9 4 11H31Z" fill="currentColor"/><path d="m23 45-5 7m14-5v8m10-10 5 6" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="17" cy="20" r="1.3" fill="#101716"/></symbol>
+  <symbol id="arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v5m10-5v5M3 11h18m-13 5h2m4 0h2"/></symbol>
+  <symbol id="people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 21v-3a6 6 0 0 1 12 0v3m2-16a3 3 0 0 1 0 6m1 3a5 5 0 0 1 3 5v2"/></symbol>
+  <symbol id="coins" viewBox="0 0 24 24"><ellipse cx="9" cy="6" rx="6" ry="3"/><path d="M3 6v5c0 1.7 2.7 3 6 3m-6-3v5c0 1.7 2.7 3 6 3m6-13v4"/><ellipse cx="16" cy="14" rx="5" ry="3"/><path d="M11 14v5c0 1.7 2.2 3 5 3s5-1.3 5-3v-5"/></symbol>
+  <symbol id="check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="shield" viewBox="0 0 24 24"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6Z"/><path d="m8 12 3 3 5-6"/></symbol>
+  <symbol id="journal" viewBox="0 0 24 24"><path d="M5 3h14v18H5zM9 3v18m3-13h4m-4 4h4m-4 4h3"/></symbol>
+  <symbol id="home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v11h-6v-7H9v7H3Z"/></symbol>
+  <symbol id="tg" viewBox="0 0 24 24"><path fill="currentColor" d="M20.6 3.5 3.1 10.3c-1.2.5-1.2 1.2-.2 1.5l4.5 1.4 1.7 5.2c.2.6.1.8.7.8.5 0 .7-.2.9-.4l2.2-2.1 4.6 3.4c.9.5 1.6.2 1.8-.8l3-14.2c.3-1.2-.4-1.8-1.7-1.3ZM9 12.9l9.6-6c.5-.3.9-.1.5.2l-8 7.3-.3 3.2L9 12.9Z"/></symbol>
+  <symbol id="vk" viewBox="0 0 24 24"><path fill="currentColor" d="M3 5h3.3c.2 5.4 2.5 7.7 4.3 8.2V5h3.1v4.7c1.9-.2 3.9-2.4 4.5-4.7h3.1a9.3 9.3 0 0 1-4.2 6 10 10 0 0 1 4.9 7h-3.5c-.8-2.4-2.7-4.2-4.8-4.5V18h-.4C6.5 18 3 13.4 3 5Z"/></symbol>
+</defs></svg>
+<header class="site-header"><div class="container header-inner">
+  <a class="brand" href="#" aria-label="Асгард — начало страницы"><svg class="brand-mark" aria-hidden="true"><use href="#mark"/></svg><span class="brand-type">АСГАРД<small>ПРИЛОЖЕНИЕ ДЛЯ КЛУБОВ</small></span></a>
+  <nav aria-label="Основная навигация"><a href="#inside">Что внутри</a><a href="#roles">Для кого</a><a href="#how">Как работает</a><a href="#questions">Вопросы</a></nav>
+  <a class="header-cta" href="#early-access">Попробовать <svg aria-hidden="true"><use href="#arrow"/></svg></a>
+</div></header>
+<main id="main">
+<section class="hero" aria-labelledby="hero-title">
+  <picture class="hero-art" aria-hidden="true"><source media="(max-width:700px)" srcset="./assets/nordic-voyage-small.webp"><img src="./assets/nordic-voyage.webp" width="1536" height="1024" alt="" fetchpriority="high"></picture>
+  <div class="hero-shade" aria-hidden="true"></div>
+  <div class="container hero-inner"><div class="hero-copy">
+    <div class="eyebrow"><span class="ornament" aria-hidden="true"></span> АСГАРД ДЛЯ ВАШЕГО КЛУБА</div>
+    <h1 id="hero-title">Тренировки и взносы.<br><em>Всё в телефоне.</em></h1>
+    <p class="hero-lead">Асгард соберёт расписание, посещения и взносы клуба. Бойцы увидят свои оплаты, а казначей — сколько денег у клуба и куда они ушли.</p>
+    <div class="hero-actions"><a class="button button-gold" href="#early-access">Попробовать одним из первых <svg aria-hidden="true"><use href="#arrow"/></svg></a><a class="text-link" href="#inside">Что будет в приложении <span aria-hidden="true">↓</span></a></div>
+    <p class="hero-note"><span class="status-dot"></span> Приложение ещё в разработке. Ищем первые клубы.</p>
+  </div><div class="hero-side-note" aria-hidden="true"><span>АСГАРД</span><i></i><span>ДЛЯ СПОРТА И РЕКОНСТРУКЦИИ</span></div></div>
+  <div class="container hero-bottom"><p>Для спортивных секций<br>и клубов исторической реконструкции</p><a href="#inside" class="scroll-cue" aria-label="Далее — что будет в Асгарде"><span>О ПРИЛОЖЕНИИ</span><svg aria-hidden="true"><use href="#arrow"/></svg></a><span class="hero-coordinate" aria-hidden="true">РАСПИСАНИЕ.<br>ПОСЕЩЕНИЯ. ВЗНОСЫ.</span></div>
+</section>
+<div class="principles-strip"><div class="container"><span><svg aria-hidden="true"><use href="#people"/></svg> Кто придёт</span><span class="strip-cross" aria-hidden="true">✧</span><span><svg aria-hidden="true"><use href="#journal"/></svg> Кто оплатил</span><span class="strip-cross" aria-hidden="true">✧</span><span><svg aria-hidden="true"><use href="#shield"/></svg> Сколько в казне</span></div></div>
+<section id="inside" class="section product-section container" aria-labelledby="inside-title">
+  <div class="section-title-row"><div><p class="eyebrow"><span class="section-index">I</span> ЧТО БУДЕТ В ПРИЛОЖЕНИИ</p><h2 id="inside-title">Расписание, взносы<br><em>и деньги клуба.</em></h2></div><p>Асгард нужен, чтобы не искать всё это по сообщениям и таблицам. Участникам и ответственным за клуб будут доступны свои разделы.</p></div>
+  <div class="product-grid"><div class="product-features">
+    <article><span class="feature-icon"><svg aria-hidden="true"><use href="#calendar"/></svg></span><div><h3>Когда и где тренировка</h3><p>Расписание и запись на занятия. До тренировки видно, кто собирается прийти. После — кто был.</p></div></article>
+    <article><span class="feature-icon"><svg aria-hidden="true"><use href="#coins"/></svg></span><div><h3>Кто сколько заплатил</h3><p>Боец видит свои взносы и сколько осталось доплатить. Казначей проверяет переводы и отмечает полученные деньги.</p></div></article>
+    <article><span class="feature-icon"><svg aria-hidden="true"><use href="#journal"/></svg></span><div><h3>Что осталось в казне</h3><p>Отдельно видно деньги на карте и у тех, кто принял наличные. Есть список расходов и возможность скачать всё в Excel.</p></div></article>
+  </div><div class="product-visual" id="phone-example">
+    <div class="visual-topline">ПРИМЕР НА ТЕЛЕФОНЕ</div>
+    <div class="phone-frame" aria-label="Пример будущего приложения на телефоне. Клуб, имя и суммы вымышлены.">
+      <div class="phone-screen">
+        <div class="phone-status" aria-hidden="true"><span>19:00</span><span class="phone-speaker"></span><span class="phone-battery"></span></div>
+        <div class="phone-club"><svg aria-hidden="true"><use href="#mark"/></svg><span>Северный клуб</span><span class="phone-avatar" aria-hidden="true">Р</span></div>
+        <div class="phone-content">
+          <div class="phone-greeting"><span>Привет, Рагнар</span><p>Вот что у тебя в клубе</p></div>
+          <div class="phone-training"><span class="phone-label">Ближайшая тренировка</span><div class="phone-training-info"><div class="phone-date"><strong>18</strong><span>НОЯБРЯ · СР</span></div><div><h3>Общая тренировка</h3><p>19:00–21:00</p><p>Основной зал</p></div></div><div class="phone-going"><span><svg aria-hidden="true"><use href="#check"/></svg> Вы идёте</span><span>Ещё 11 человек</span></div></div>
+          <div class="phone-payment"><div><span class="phone-label">Ваш абонемент</span><strong>Долга нет</strong></div><span class="phone-paid"><svg aria-hidden="true"><use href="#check"/></svg></span><p>Казначей подтвердил 2 500 ₽</p></div>
+          <div class="phone-visits"><span>С 10 ноября вы были на</span><strong>4 тренировках</strong></div>
+        </div>
+        <div class="phone-nav" aria-hidden="true"><span class="active"><svg><use href="#home"/></svg>Главная</span><span><svg><use href="#calendar"/></svg>Тренировки</span><span><svg><use href="#coins"/></svg>Мои взносы</span></div>
+        <div class="phone-home-indicator" aria-hidden="true"></div>
+      </div>
+    </div>
+    <p class="demo-caption">Так может выглядеть приложение.<br>Имена и суммы — для примера.</p>
+  </div></div>
+</section>
+<section id="about" class="section container about-section" aria-labelledby="about-title">
+  <div class="section-intro"><p class="eyebrow"><span class="section-index">II</span> ЗНАКОМО МНОГИМ КЛУБАМ</p><h2 id="about-title">Приходится<br><em>спрашивать в чате?</em></h2><p>Один отвечает за тренировки, другой собирает взносы. Но всё равно приходится искать старые сообщения и переводы.</p></div>
+  <div class="problem-list">
+    <article><span class="problem-number">01</span><div><h3>«Кто сегодня будет?»</h3><p>Кто-то написал «буду», кто-то поставил реакцию. Перед тренировкой всё равно нужно пересчитать людей.</p></div><svg aria-hidden="true"><use href="#people"/></svg></article>
+    <article><span class="problem-number">02</span><div><h3>«Я же уже переводил»</h3><p>Боец уверен, что оплатил. Казначей ищет его перевод среди остальных. Разбираются в переписке.</p></div><svg aria-hidden="true"><use href="#coins"/></svg></article>
+    <article><span class="problem-number">03</span><div><h3>«А сколько у клуба денег?»</h3><p>Часть на карте, часть наличными у тренера. Ещё заплатили за зал. Хочется просто увидеть, сколько осталось.</p></div><svg aria-hidden="true"><use href="#calendar"/></svg></article>
+  </div>
+</section>
+<section id="roles" class="roles-section section" aria-labelledby="roles-title"><div class="container">
+  <div class="roles-heading"><div><p class="eyebrow"><span class="section-index">III</span> ДЛЯ УЧАСТНИКОВ И ОРГАНИЗАТОРОВ</p><h2 id="roles-title">Что это даст<br><em>вам в клубе</em></h2></div><p>Выберите, чем вы занимаетесь в клубе, — покажем на примере.</p></div>
+  <div class="role-tabs" role="tablist" aria-label="Возможности для участников клуба">
+    <button id="tab-fighter" type="button" role="tab" aria-selected="true" aria-controls="role-panel" tabindex="0" data-role="fighter"><span>01</span> Бойцу <svg aria-hidden="true"><use href="#arrow"/></svg></button>
+    <button id="tab-organizer" type="button" role="tab" aria-selected="false" aria-controls="role-panel" tabindex="-1" data-role="organizer"><span>02</span> Организатору <svg aria-hidden="true"><use href="#arrow"/></svg></button>
+    <button id="tab-treasurer" type="button" role="tab" aria-selected="false" aria-controls="role-panel" tabindex="-1" data-role="treasurer"><span>03</span> Казначею <svg aria-hidden="true"><use href="#arrow"/></svg></button>
+  </div>
+  <div class="role-panel" id="role-panel" role="tabpanel" aria-labelledby="tab-fighter" tabindex="0">
+    <div class="role-copy"><span class="panel-label" id="role-kicker">БОЙЦУ</span><h3 id="role-title">Когда приходить<br>и сколько платить</h3><p id="role-description">Откройте расписание, отметьте, что придёте, и посмотрите свои оплаты. Если перевели деньги — сообщите об этом в приложении.</p><ul id="role-points"><li>Адрес и время тренировки</li><li>Сколько осталось заплатить</li><li>Сообщение, если тренировку перенесли</li></ul></div>
+    <div class="role-example" aria-label="Пример использования"><span class="example-label">НАПРИМЕР</span><div class="scenario-icon"><svg aria-hidden="true" id="role-icon"><use href="#calendar"/></svg></div><h4 id="example-title">Запись на тренировку</h4><p id="example-description">Выбрали занятие и нажали «Иду». Организатор увидит, что вы собираетесь прийти.</p><div class="example-footer"><span class="green-dot"></span><span id="example-footer">Если планы изменились, ответ можно поменять.</span></div></div>
+  </div>
+  <p class="roles-footnote">Один человек может быть бойцом, тренером и казначеем. Чужие оплаты и казну увидят только те, кому клуб дал доступ.</p>
+</div></section>
+<section id="how" class="section container how-section" aria-labelledby="how-title">
+  <div class="section-title-row"><div><p class="eyebrow"><span class="section-index">IV</span> КАК ЭТО РАБОТАЕТ</p><h2 id="how-title">Обычная<br><em>клубная тренировка</em></h2></div><p>Четыре шага: от записи на занятие до отметки об оплате.</p></div>
+  <div class="steps"><article><span class="step-number">1</span><svg aria-hidden="true"><use href="#calendar"/></svg><h3>Записались</h3><p>Боец выбирает тренировку и отмечает «Иду». Организатор видит, кого ждать.</p></article><article><span class="step-number">2</span><svg aria-hidden="true"><use href="#people"/></svg><h3>Потренировались</h3><p>Ответственный отмечает всех, кто пришёл, и подтверждает, что список проверен.</p></article><article><span class="step-number">3</span><svg aria-hidden="true"><use href="#coins"/></svg><h3>Узнали сумму</h3><p>После первой отмеченной тренировки Асгард посчитает полный месячный абонемент. Следующие посещения не увеличат эту сумму.</p></article><article><span class="step-number">4</span><svg aria-hidden="true"><use href="#check"/></svg><h3>Оплатили</h3><p>Деньги передают как обычно. Перевод подтверждает казначей, наличные — тот, кто принял их по поручению клуба.</p></article></div>
+  <div class="money-note"><span class="money-note-icon">≠</span><div><h3>Долг бойца — не деньги на карте.</h3><p>Асгард покажет отдельно, сколько уже получили и сколько ещё должны. Деньги у тренера тоже будут видны, пока он не передаст их клубу.</p></div></div>
+</section>
+<section id="start" class="section start-section" aria-labelledby="start-title"><div class="container"><div class="start-heading"><div><p class="eyebrow"><span class="section-index">V</span> КАК НАЧАТЬ</p><h2 id="start-title">Начните с того,<br><em>что есть сейчас</em></h2></div><p>Старые таблицы можно оставить в архиве. Всю историю клуба переносить не нужно.</p></div><div class="start-steps"><article><span>01</span><h3>Укажите правила клуба</h3><p>Сколько стоит абонемент и с какой даты его считать. Казначей добавит, кто сколько должен и сколько денег уже есть у клуба.</p></article><article><span>02</span><h3>Пригласите участников</h3><p>Передайте бойцам приглашения. Войти можно будет через Telegram или VK и выбрать имя для клуба.</p></article><article><span>03</span><h3>Проведите первые тренировки</h3><p>Записывайтесь, отмечайте пришедших и подтверждайте оплаты. Проверим на деле, сможет ли клуб обходиться без отдельной таблицы.</p></article></div><div class="start-note"><svg aria-hidden="true"><use href="#shield"/></svg><p>Асгард не принимает деньги за клуб. Переводы и наличные останутся как раньше.</p></div></div></section>
+<section id="questions" class="section faq-section"><div class="container faq-layout"><div><p class="eyebrow"><span class="section-index">VI</span> ЧАСТЫЕ ВОПРОСЫ</p><h2>Что ещё<br><em>нужно знать</em></h2><p class="faq-intro">О запуске, оплатах и переходе с таблиц.</p></div><div class="faq-list">
+  <details open><summary>Асгард уже работает?<span>+</span></summary><p>Пока готовим приложение к первому запуску. Если хотите попробовать его в своём клубе — напишите автору. Экран телефона на этой странице показывает, как может выглядеть Асгард.</p></details>
+  <details><summary>Нужно устанавливать приложение?<span>+</span></summary><p>Можно будет открыть Асгард по ссылке на телефоне. Скачивать приложение не обязательно. На компьютере он тоже будет работать. Для записи на тренировку и отметки об оплате нужен интернет.</p></details>
+  <details><summary>Нужно переносить все старые таблицы?<span>+</span></summary><p>Нет. Достаточно указать, кто сколько должен, кто уже заплатил вперёд и сколько денег есть у клуба. Старые записи можно оставить там, где они хранятся сейчас.</p></details>
+  <details><summary>Деньги нужно переводить через Асгард?<span>+</span></summary><p>Нет. Платите клубу так же, как раньше: переводом или наличными. Перевод подтвердит казначей, наличные — тот, кто принимает их по поручению клуба.</p></details>
+  <details><summary>Все участники увидят долги друг друга?<span>+</span></summary><p>Нет. Боец видит свои оплаты и свой долг. Посмотреть чужие взносы и клубные деньги смогут только те, кому клуб дал доступ.</p></details>
+  <details><summary>Сколько будет стоить доступ?<span>+</span></summary><p>Цену пока не объявляли. Напишите автору — обсудим ваш клуб и условия первого запуска.</p></details>
+</div></div></section>
+<section id="early-access" class="contact-section container" aria-labelledby="contact-title">
+  <div class="contact-frame"><div class="contact-top"><span class="eyebrow"><span class="status-dot"></span> ПЕРВЫЙ ЗАПУСК</span><svg class="contact-mark" aria-hidden="true"><use href="#mark"/></svg></div><div class="contact-content"><div><h2 id="contact-title">Хотите попробовать<br><em>в своём клубе?</em></h2><p>Напишите, сколько вас в клубе и как вы сейчас собираете взносы. Обсудим, подойдёт ли вам Асгард.</p></div><div class="contact-actions"><a class="button button-gold" href="https://t.me/enzoamore" target="_blank" rel="noopener noreferrer"><svg aria-hidden="true"><use href="#tg"/></svg> Написать в Telegram <svg class="external-arrow" aria-hidden="true"><use href="#arrow"/></svg></a><a class="button button-outline" href="https://vk.ru/enz0amore" target="_blank" rel="noopener noreferrer"><svg aria-hidden="true"><use href="#vk"/></svg> Написать в VK <svg class="external-arrow" aria-hidden="true"><use href="#arrow"/></svg></a><p>Выберите, где удобнее написать.</p></div></div><div class="contact-bottom"><span>Можно начать так</span><p>«Привет! У нас клуб на 20 человек. Взносы записываем в таблицу. Хотим попробовать Асгард».</p></div></div>
+</section>
+</main>
+<footer class="site-footer container"><a class="brand" href="#" aria-label="Асгард — в начало"><svg aria-hidden="true" class="brand-mark"><use href="#mark"/></svg><span>АСГАРД</span></a><p>Расписание, посещения и деньги клуба.</p><a href="#early-access">Написать автору <span>↗</span></a></footer>
+</body>
+</html>

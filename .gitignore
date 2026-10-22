@@ -1,0 +1,21 @@
+# Local service settings and credentials
+.openai/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Dependencies, caches and local editor files
+node_modules/
+vendor/
+__pycache__/
+*.pyc
+.idea/
+.vscode/
+Thumbs.db
+.DS_Store
+
+# Local delivery archives and preview captures
+landing/*.zip
+landing/preview-*.png
