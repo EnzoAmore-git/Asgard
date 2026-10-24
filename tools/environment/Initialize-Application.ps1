@@ -1,9 +1,6 @@
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $applicationRoot = Join-Path $projectRoot 'application'
-$env:COMPOSER_HOME = Join-Path $projectRoot '.local/composer-home'
-$env:COMPOSER_CACHE_DIR = Join-Path $projectRoot '.local/composer-cache'
-$env:PATH = (Join-Path $projectRoot '.local/php') + ';' + $env:PATH
 $php = Join-Path $projectRoot '.local/php/php.exe'
 $credentials = Get-Content (Join-Path $projectRoot '.local/mysql-credentials.json') -Raw | ConvertFrom-Json
 $environmentFile = Join-Path $applicationRoot '.env'
@@ -14,13 +11,22 @@ if (-not (Test-Path -LiteralPath $environmentFile)) {
     [IO.File]::WriteAllText($environmentFile, $content)
 }
 Push-Location $applicationRoot
+$environmentNames = @('COMPOSER_HOME', 'COMPOSER_CACHE_DIR', 'PATH')
+$previousEnvironment = @{}
+foreach ($name in $environmentNames) { $previousEnvironment[$name] = [Environment]::GetEnvironmentVariable($name, 'Process') }
 try {
-    & $php (Join-Path $projectRoot '.local/composer/composer.phar') dump-autoload --no-interaction --quiet
-    if ($LASTEXITCODE -ne 0) { throw 'Composer autoload failed.' }
+    $env:COMPOSER_HOME = Join-Path $projectRoot '.local/composer-home'
+    $env:COMPOSER_CACHE_DIR = Join-Path $projectRoot '.local/composer-cache'
+    $env:PATH = (Join-Path $projectRoot '.local/php') + ';' + $env:PATH
+    & $php (Join-Path $projectRoot '.local/composer/composer.phar') install --no-interaction --prefer-dist --quiet
+    if ($LASTEXITCODE -ne 0) { throw 'Composer installation failed.' }
     if ([IO.File]::ReadAllText($environmentFile) -match '(?m)^APP_KEY=\s*$') {
         & $php artisan key:generate --quiet
         if ($LASTEXITCODE -ne 0) { throw 'Application key generation failed.' }
     }
     & $php artisan migrate --force --no-interaction
     if ($LASTEXITCODE -ne 0) { throw 'Development migrations failed.' }
-} finally { Pop-Location }
+} finally {
+    Pop-Location
+    foreach ($name in $environmentNames) { [Environment]::SetEnvironmentVariable($name, $previousEnvironment[$name], 'Process') }
+}
