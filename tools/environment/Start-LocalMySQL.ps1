@@ -45,6 +45,12 @@ if (-not $credentials.PSObject.Properties['admin']) {
     $credentials | Add-Member -NotePropertyName admin -NotePropertyValue ([Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(24)))
     [IO.File]::WriteAllText($credentialsPath, ($credentials | ConvertTo-Json))
 }
+foreach ($credentialName in @('application', 'testing')) {
+    if (-not $credentials.PSObject.Properties[$credentialName]) {
+        $credentials | Add-Member -NotePropertyName $credentialName -NotePropertyValue ([Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(24)))
+    }
+}
+[IO.File]::WriteAllText($credentialsPath, ($credentials | ConvertTo-Json))
 $serverUnix = $serverRoot.Replace('\','/')
 $dataUnix = $dataRoot.Replace('\','/')
 $configuration = @"
@@ -74,6 +80,12 @@ CREATE USER IF NOT EXISTS 'asgard_environment'@'127.0.0.1' IDENTIFIED BY '$($cre
 GRANT ALL PRIVILEGES ON asgard_environment.* TO 'asgard_environment'@'127.0.0.1';
 CREATE USER IF NOT EXISTS 'asgard_admin'@'127.0.0.1' IDENTIFIED BY '$($credentials.admin)';
 GRANT SHUTDOWN ON *.* TO 'asgard_admin'@'127.0.0.1';
+CREATE DATABASE IF NOT EXISTS asgard_development CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+CREATE USER IF NOT EXISTS 'asgard_development'@'127.0.0.1' IDENTIFIED BY '$($credentials.application)';
+GRANT ALL PRIVILEGES ON asgard_development.* TO 'asgard_development'@'127.0.0.1';
+CREATE DATABASE IF NOT EXISTS asgard_test CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+CREATE USER IF NOT EXISTS 'asgard_test'@'127.0.0.1' IDENTIFIED BY '$($credentials.testing)';
+GRANT ALL PRIVILEGES ON asgard_test.* TO 'asgard_test'@'127.0.0.1';
 "@
 [IO.File]::WriteAllText($initPath, $sql)
 [IO.File]::WriteAllText($adminPath, "[client]`nuser=asgard_admin`npassword=$($credentials.admin)`nhost=127.0.0.1`nport=$port`n")

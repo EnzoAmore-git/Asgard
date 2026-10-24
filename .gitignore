@@ -1,5 +1,8 @@
 # Local service settings and credentials
 .local/
+application/public/build/
+application/public/hot
+application/.phpunit.cache/
 .openai/
 .env
 .env.*
