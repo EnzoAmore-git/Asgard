@@ -1,4 +1,5 @@
 # Local service settings and credentials
+.local/
 .openai/
 .env
 .env.*

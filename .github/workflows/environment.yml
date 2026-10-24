@@ -1,0 +1,64 @@
+name: Environment checks
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/environment/**'
+      - '.github/workflows/environment.yml'
+  pull_request:
+    paths:
+      - 'tools/environment/**'
+      - '.github/workflows/environment.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  php-mysql:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      mysql:
+        image: mysql:8.4.13
+        env:
+          MYSQL_ROOT_PASSWORD: ci-root-only-not-a-real-secret
+          MYSQL_DATABASE: asgard_ci
+          MYSQL_USER: asgard_ci
+          MYSQL_PASSWORD: ci-only-not-a-real-secret
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_mysql, intl, zip, sodium, mbstring, dom, curl, fileinfo
+          tools: composer:v2
+          coverage: none
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - name: PHP syntax
+        run: find tools/environment -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: PHP runtime
+        run: php tools/environment/check.php
+      - name: MySQL transaction and constraint smoke checks
+        run: php tools/environment/check-mysql.php
+        env:
+          ASGARD_DB_HOST: 127.0.0.1
+          ASGARD_DB_PORT: '3306'
+          ASGARD_DB_DATABASE: asgard_ci
+          ASGARD_DB_USERNAME: asgard_ci
+          ASGARD_DB_PASSWORD: ci-only-not-a-real-secret
+      - name: Node and existing landing syntax
+        run: |
+          node --version
+          node --check landing/dist/script.js
+          composer --version
