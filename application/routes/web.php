@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Route;
 Route::pattern('club', '[0-9]+');
 Route::pattern('membership', '[0-9]+');
 Route::pattern('invitation', '[0-9]+');
+Route::pattern('training', '[0-9]+');
+Route::pattern('template', '[0-9]+');
 
 Route::get('/', fn () => view('application'));
 Route::get('/local-access/{token}', LocalAccessController::class)->where('token', '[A-Za-z0-9]{64}')->middleware('throttle:10,1');
@@ -23,6 +25,14 @@ Route::prefix('api')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::get('/invitations/{token}', [ClubController::class, 'invitationInfo'])->where('token', '[a-zA-Z0-9]{64}')->middleware('throttle:30,1');
     Route::middleware('auth')->group(function () {
+        Route::prefix('clubs/{club}')->controller(\App\Http\Controllers\TrainingController::class)->group(function () {
+            Route::get('trainings','index'); Route::get('training-options','options'); Route::get('trainings/{training}','show');
+            Route::post('trainings','create')->middleware('throttle:30,1'); Route::put('trainings/{training}','update');
+            Route::post('trainings/{training}/cancel','cancel'); Route::put('trainings/{training}/rsvp','rsvp');
+            Route::put('trainings/{training}/attendance','draft'); Route::post('trainings/{training}/close','close')->middleware('throttle:30,1');
+            Route::post('training-templates','template'); Route::put('training-templates/{template}','updateTemplate'); Route::post('training-templates/{template}/generate','generate')->middleware('throttle:10,1');
+            Route::get('billing','billing'); Route::post('billing/tariff','configure'); Route::post('billing/exemptions/{membership}','exemption');
+        });
         Route::prefix('clubs/{club}/finance')->group(function () {
             Route::get('me', [\App\Http\Controllers\FinanceController::class, 'own']);
             Route::get('summary', [\App\Http\Controllers\FinanceController::class, 'summary']);

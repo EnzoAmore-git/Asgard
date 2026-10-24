@@ -1,3 +1,5 @@
+import { BillingSettings } from './BillingSettings';
+import { major, minor, money } from './money';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 
 type Requester = <T>(path: string, method?: string, body?: unknown, headers?: Record<string, string>) => Promise<T>;
@@ -10,28 +12,6 @@ type JournalRow = Omit<PersonalEvent, 'amount_minor'> & { author: string; openin
 type Target = { kind: 'member' | 'card' | 'custody'; member: number | null; name: string; opening: Opening };
 
 const names: Record<string, string> = { opening_member: 'Начальный долг или переплата', opening_card: 'Начальная сумма на карте', opening_custody: 'Начальные деньги у ответственного', charge: 'Начислен взнос', card_receipt: 'Оплата на карту', cash_receipt: 'Оплата наличными', cash_transfer: 'Передача на карту', expense: 'Расход клуба', charge_reversal: 'Исправление начисления' };
-
-function major(value: string, scale: number): string {
-  const n = BigInt(value); const digits = (n < 0n ? -n : n).toString().padStart(scale + 1, '0');
-  return `${n < 0n ? '-' : ''}${scale ? `${digits.slice(0, -scale)}.${digits.slice(-scale)}` : digits}`;
-}
-
-function minor(value: string, scale: number): string {
-  const normalized = value.trim().replace(/[\s\u00a0\u202f]/g, '').replace(/−/g, '-').replace(/^\+/, '').replace(',', '.');
-  if (!new RegExp(`^-?\\d+(?:\\.\\d{1,${Math.max(scale, 1)}})?$`).test(normalized) || (scale === 0 && normalized.includes('.'))) {
-    throw new Error(scale ? `Введите сумму, например ${scale === 2 ? '2500,50' : `2500,${'0'.repeat(scale - 1)}1`}. Допустимо ${scale} знака после запятой.` : 'Введите сумму целым числом.');
-  }
-  const negative = normalized.startsWith('-'); const [whole, fraction = ''] = normalized.replace('-', '').split('.');
-  const n = BigInt(whole + fraction.padEnd(scale, '0'));
-  return (negative && n !== 0n ? '-' : '') + n.toString();
-}
-
-function money(value: string, currency: string, scale: number): string {
-  const exact = major(value, scale); const [integer, fraction] = exact.split('.');
-  const whole = new Intl.NumberFormat('ru-RU').format(BigInt(integer));
-  const sign = exact.startsWith('-') && BigInt(integer) === 0n ? '−' : '';
-  return `${sign}${whole}${fraction ? `,${fraction}` : ''} ${currency === 'RUB' ? '₽' : currency}`;
-}
 
 function when(value: string, timezone: string): string {
   const date = new Date(value.includes('T') ? value : value.replace(' ', 'T') + 'Z');
@@ -136,6 +116,7 @@ export function Finance({ club, request }: { club: { id: number; name: string; c
           {memberPage && <button className="secondary" disabled={busy} onClick={() => void action(async () => { const data = await request<{ data: Member[]; next_page: number | null }>(`${base}/members?page=${memberPage}`); setMembers(old => [...old, ...data.data]); setMemberPage(data.next_page); })}>Еще участники</button>}
         </section>
       </>}
+      {view && <BillingSettings clubId={club.id} manage={manage} request={request}/>}
       {target && summary && <section ref={formRef} tabIndex={-1} className="section finance-editor" aria-labelledby="opening-title"><h2 id="opening-title">{target.opening ? 'Исправить начальные данные' : 'Начальные данные'}: {target.name}</h2><p className="hint">{target.kind === 'member' ? 'Долг вводите со знаком минус: −2500. Переплату — без минуса: 1000. Ноль тоже можно сохранить.' : 'Укажите сумму к началу учета. Это не новое поступление.'}</p>{target.opening && <p>Ранее указано: <strong>{fmt(target.opening.amount_minor)}</strong>. Исправление сохранится отдельной записью.</p>}
         <form onSubmit={save}>{error && <div className="feedback error" role="alert">{error}<button type="button" className="quiet" disabled={busy} onClick={refresh}>Проверить результат</button></div>}<label>Сумма, {summary.currency}<input name="amount" type="text" inputMode={target.kind === 'member' ? 'text' : 'decimal'} value={amount} onChange={e => setAmount(e.target.value)} required disabled={busy} autoComplete="off" maxLength={30}/></label><label>На какую дату<input type="date" value={date} onChange={e => setDate(e.target.value)} required disabled={busy}/></label><label>{target.opening ? 'Почему исправляем' : 'Комментарий к переносу'}<input value={reason} onChange={e => setReason(e.target.value)} minLength={2} maxLength={500} required disabled={busy}/></label><p className="hint">Сохранится только изменение начальной суммы. Поздние оплаты и начисления останутся.</p><button disabled={busy}>{busy ? 'Сохраняем…' : 'Сохранить начальные данные'}</button><button type="button" className="quiet" disabled={busy} onClick={() => setTarget(null)}>Закрыть</button></form>
       </section>}

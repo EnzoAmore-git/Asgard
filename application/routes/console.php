@@ -3,10 +3,23 @@
 use App\Models\Club;
 use App\Models\User;
 use App\Services\Clubs\ClubService;
+use App\Services\Training\TrainingDemo;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
+
+Artisan::command('asgard:training-demo', function () {
+    if (! app()->environment('local')) {
+        $this->error('Available only in local environment.');
+
+        return 1;
+    }
+    $result = app(TrainingDemo::class)->create();
+    $this->info('Fictional training club: '.$result['club_id'].'. Local owner user: '.$result['owner_id'].'. No real money or provider login.');
+
+    return 0;
+})->purpose('Create a local fictional training and subscription example');
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
