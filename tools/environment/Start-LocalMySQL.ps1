@@ -41,6 +41,10 @@ if (-not (Test-Path -LiteralPath $credentialsPath)) {
     [IO.File]::WriteAllText($credentialsPath, ($credentials | ConvertTo-Json))
 }
 $credentials = Get-Content -LiteralPath $credentialsPath -Raw | ConvertFrom-Json
+if (-not $credentials.PSObject.Properties['admin']) {
+    $credentials | Add-Member -NotePropertyName admin -NotePropertyValue ([Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(24)))
+    [IO.File]::WriteAllText($credentialsPath, ($credentials | ConvertTo-Json))
+}
 $serverUnix = $serverRoot.Replace('\','/')
 $dataUnix = $dataRoot.Replace('\','/')
 $configuration = @"
@@ -68,15 +72,17 @@ ALTER USER 'root'@'localhost' IDENTIFIED BY '$($credentials.root)';
 CREATE DATABASE IF NOT EXISTS asgard_environment CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 CREATE USER IF NOT EXISTS 'asgard_environment'@'127.0.0.1' IDENTIFIED BY '$($credentials.app)';
 GRANT ALL PRIVILEGES ON asgard_environment.* TO 'asgard_environment'@'127.0.0.1';
+CREATE USER IF NOT EXISTS 'asgard_admin'@'127.0.0.1' IDENTIFIED BY '$($credentials.admin)';
+GRANT SHUTDOWN ON *.* TO 'asgard_admin'@'127.0.0.1';
 "@
 [IO.File]::WriteAllText($initPath, $sql)
-[IO.File]::WriteAllText($adminPath, "[client]`nuser=root`npassword=$($credentials.root)`nhost=127.0.0.1`nport=$port`n")
-$process = Start-Process -FilePath $mysqlBinary -ArgumentList @("--defaults-file=$configPath", "--init-file=$initPath") -WorkingDirectory "$drive/" -WindowStyle Hidden -PassThru
+[IO.File]::WriteAllText($adminPath, "[client]`nuser=asgard_admin`npassword=$($credentials.admin)`nhost=127.0.0.1`nport=$port`n")
+$process = Start-Process -FilePath $mysqlBinary -ArgumentList @("--defaults-file=$configPath", "--init-file=$initPath", '--no-monitor') -WorkingDirectory "$drive/" -WindowStyle Hidden -PassThru
 $adminBinary = Join-Path $serverRoot 'bin/mysqladmin.exe'
 $ready = $false
 for ($attempt=0; $attempt -lt 40; $attempt++) {
     if ($process.HasExited) { throw 'MySQL exited before becoming ready. Review the local error log.' }
-    & $adminBinary "--defaults-extra-file=$adminPath" ping --silent 2>$null | Out-Null
+    & $adminBinary "--defaults-extra-file=$adminPath" status 2>$null | Out-Null
     if ($LASTEXITCODE -eq 0) { $ready = $true; break }
     Start-Sleep -Milliseconds 250
 }
