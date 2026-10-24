@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\Finance\ProtectJournal;
 use App\Session\HashedDatabaseSessionHandler;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
@@ -22,6 +23,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        DB::beforeExecuting(
+            fn (string $sql) => ProtectJournal::check($sql),
+        );
         Session::extend('hashed-database', function ($app) {
             return new HashedDatabaseSessionHandler(
                 DB::connection(config('session.connection')),

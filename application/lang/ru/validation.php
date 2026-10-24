@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'date_format' => 'Проверьте дату в поле «:attribute».',
+    'size' => ['string' => 'В поле «:attribute» нужно ровно :size символа.'],
     'required' => 'Заполните поле «:attribute».',
     'present' => 'Передайте поле «:attribute».',
     'string' => 'В поле «:attribute» нужен текст.',

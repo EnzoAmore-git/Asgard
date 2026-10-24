@@ -23,6 +23,13 @@ Route::prefix('api')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::get('/invitations/{token}', [ClubController::class, 'invitationInfo'])->where('token', '[a-zA-Z0-9]{64}')->middleware('throttle:30,1');
     Route::middleware('auth')->group(function () {
+        Route::prefix('clubs/{club}/finance')->group(function () {
+            Route::get('me', [\App\Http\Controllers\FinanceController::class, 'own']);
+            Route::get('summary', [\App\Http\Controllers\FinanceController::class, 'summary']);
+            Route::get('members', [\App\Http\Controllers\FinanceController::class, 'members']);
+            Route::get('journal', [\App\Http\Controllers\FinanceController::class, 'journal']);
+            Route::post('opening', [\App\Http\Controllers\FinanceController::class, 'opening'])->middleware('throttle:30,1');
+        });
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::post('/account/link/{provider}', [AuthController::class, 'link'])->whereIn('provider', ['telegram', 'vk'])->middleware('throttle:10,1');
         Route::post('/account/revoke-other-sessions', [AuthController::class, 'revokeOtherSessions']);

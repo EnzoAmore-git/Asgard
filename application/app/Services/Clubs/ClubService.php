@@ -8,6 +8,7 @@ use App\Models\Invitation;
 use App\Models\Membership;
 use App\Models\User;
 use App\Services\Audit;
+use App\Services\Finance\Money;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -41,6 +42,8 @@ class ClubService
 
         return DB::transaction(function () use ($operator, $owner, $data) {
             $club = Club::create(collect($data)->only(['name', 'timezone', 'currency', 'period_start_day'])->all());
+            $club->currency_scale = Money::scale($data['currency']);
+            $club->save();
             $member = Membership::create([
                 'club_id' => $club->id, 'user_id' => $owner->id, 'club_name' => trim($data['owner_name']),
                 'name_key' => $this->nameKey($data['owner_name']), 'status' => 'active',
