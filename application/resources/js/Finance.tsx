@@ -1,3 +1,4 @@
+import { PaymentsPanel } from './PaymentsPanel';
 import { BillingSettings } from './BillingSettings';
 import { major, minor, money } from './money';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
@@ -11,14 +12,14 @@ type Summary = { currency: string; scale: number; timezone: string; local_date: 
 type JournalRow = Omit<PersonalEvent, 'amount_minor'> & { author: string; opening_value_minor: string | null; members: { club_name: string; amount_minor: string }[]; money: { location: string; club_name: string | null; amount_minor: string }[] };
 type Target = { kind: 'member' | 'card' | 'custody'; member: number | null; name: string; opening: Opening };
 
-const names: Record<string, string> = { opening_member: 'Начальный долг или переплата', opening_card: 'Начальная сумма на карте', opening_custody: 'Начальные деньги у ответственного', charge: 'Начислен взнос', card_receipt: 'Оплата на карту', cash_receipt: 'Оплата наличными', cash_transfer: 'Передача на карту', expense: 'Расход клуба', charge_reversal: 'Исправление начисления' };
+const names: Record<string, string> = { opening_member: 'Начальный долг или переплата', opening_card: 'Начальная сумма на карте', opening_custody: 'Начальные деньги у ответственного', charge: 'Начислен взнос', card_receipt: 'Оплата на карту', cash_receipt: 'Оплата наличными', cash_transfer: 'Передача на карту', expense: 'Расход клуба', unknown_receipt: 'Поступление без имени', receipt_identified: 'Установлен плательщик', payer_correction: 'Исправлен плательщик', overpayment_refund: 'Возврат переплаты', bank_cancellation: 'Банковская отмена', card_adjustment: 'Исправление расхождения карты', charge_reversal: 'Исправление начисления' };
 
 function when(value: string, timezone: string): string {
   const date = new Date(value.includes('T') ? value : value.replace(' ', 'T') + 'Z');
   return date.toLocaleString('ru-RU', { timeZone: timezone, dateStyle: 'short', timeStyle: 'short' });
 }
 
-export function Finance({ club, request }: { club: { id: number; name: string; capabilities: string[] }; request: Requester }) {
+export function Finance({ club, request }: { club: { id: number; name: string; capabilities: string[]; membership_id?: number; status?: string }; request: Requester }) {
   const manage = club.capabilities.includes('finance.manage');
   const view = club.capabilities.includes('finance.view');
   const base = `/api/clubs/${club.id}/finance`;
@@ -116,6 +117,7 @@ export function Finance({ club, request }: { club: { id: number; name: string; c
           {memberPage && <button className="secondary" disabled={busy} onClick={() => void action(async () => { const data = await request<{ data: Member[]; next_page: number | null }>(`${base}/members?page=${memberPage}`); setMembers(old => [...old, ...data.data]); setMemberPage(data.next_page); })}>Еще участники</button>}
         </section>
       </>}
+      {club.status !== 'excluded' && <PaymentsPanel club={club} request={request} onChange={load}/>}
       {view && <BillingSettings clubId={club.id} manage={manage} request={request}/>}
       {target && summary && <section ref={formRef} tabIndex={-1} className="section finance-editor" aria-labelledby="opening-title"><h2 id="opening-title">{target.opening ? 'Исправить начальные данные' : 'Начальные данные'}: {target.name}</h2><p className="hint">{target.kind === 'member' ? 'Долг вводите со знаком минус: −2500. Переплату — без минуса: 1000. Ноль тоже можно сохранить.' : 'Укажите сумму к началу учета. Это не новое поступление.'}</p>{target.opening && <p>Ранее указано: <strong>{fmt(target.opening.amount_minor)}</strong>. Исправление сохранится отдельной записью.</p>}
         <form onSubmit={save}>{error && <div className="feedback error" role="alert">{error}<button type="button" className="quiet" disabled={busy} onClick={refresh}>Проверить результат</button></div>}<label>Сумма, {summary.currency}<input name="amount" type="text" inputMode={target.kind === 'member' ? 'text' : 'decimal'} value={amount} onChange={e => setAmount(e.target.value)} required disabled={busy} autoComplete="off" maxLength={30}/></label><label>На какую дату<input type="date" value={date} onChange={e => setDate(e.target.value)} required disabled={busy}/></label><label>{target.opening ? 'Почему исправляем' : 'Комментарий к переносу'}<input value={reason} onChange={e => setReason(e.target.value)} minLength={2} maxLength={500} required disabled={busy}/></label><p className="hint">Сохранится только изменение начальной суммы. Поздние оплаты и начисления останутся.</p><button disabled={busy}>{busy ? 'Сохраняем…' : 'Сохранить начальные данные'}</button><button type="button" className="quiet" disabled={busy} onClick={() => setTarget(null)}>Закрыть</button></form>
@@ -125,7 +127,7 @@ export function Finance({ club, request }: { club: { id: number; name: string; c
         : <><ol className="finance-history">{own.history.map(e => <li key={e.id}><strong>{names[e.type] ?? 'Изменение взноса'}</strong><p>{fmt(e.amount_minor)}</p><p>{e.reason}</p><small>На дату: {when(e.occurred_at, timezone)}<br/>Внесено: {when(e.created_at, timezone)} · №{e.id}{e.related_event_id ? `, исправляет №${e.related_event_id}` : ''}</small></li>)}</ol>{!own.history.length && <p>Начислений и оплат пока нет.</p>}{own.next_page && <button className="secondary" disabled={busy} onClick={() => void action(async () => { const data = await request<Own>(`${base}/me?page=${own.next_page}`); setOwn(old => old ? { ...data, history: [...old.history, ...data.history] } : data); })}>Еще записи</button>}</>}
       </section>
       {!view && own.cash_history.length > 0 && <section className="section"><h2>Деньги клуба у меня</h2><p className="hint">Здесь только суммы, за которые вы отвечаете.</p><ol className="finance-history">{own.cash_history.map(e => <li key={e.id}><strong>{names[e.type] ?? 'Изменение суммы'}</strong><p>{fmt(e.amount_minor)}</p><p>{e.reason}</p><small>{when(e.occurred_at, timezone)} · №{e.id}</small></li>)}</ol>{own.cash_next_page && <button className="secondary" disabled={busy} onClick={() => void action(async () => { const data = await request<Own>(`${base}/me?cash_page=${own.cash_next_page}`); setOwn(old => old ? { ...old, custody_minor: data.custody_minor, cash_history: [...old.cash_history, ...data.cash_history], cash_next_page: data.cash_next_page } : data); })}>Еще движения денег</button>}</section>}
-      <p className="hint finance-footnote">Оплаты, тренировки и возвраты появятся на следующих этапах. Здесь сейчас переносим начальные данные.</p>
+      <p className="hint finance-footnote">Начальные данные сохраняются отдельно от новых оплат. Исправление закрытой явки появится на следующем этапе.</p>
     </>}
   </>;
 }

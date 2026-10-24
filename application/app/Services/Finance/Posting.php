@@ -54,6 +54,49 @@ final readonly class Posting
         return new self('charge_reversal', [$member => $amount], [], $event);
     }
 
+    public static function unknown(int $amount): self
+    {
+        self::positive($amount);
+
+        return new self('unknown_receipt', [], [self::cash(null, $amount)]);
+    }
+
+    public static function identify(int $member, int $amount, int $event): self
+    {
+        self::positive($amount);
+
+        return new self('receipt_identified', [$member => $amount], [], $event);
+    }
+
+    public static function reassign(int $old, int $new, int $amount, int $event): self
+    {
+        self::positive($amount);
+        abort_if($old === $new, 422, 'Участник не изменился.');
+
+        return new self('payer_correction', [$old => -$amount, $new => $amount], [], $event);
+    }
+
+    public static function refund(int $member, int $amount, int $event): self
+    {
+        self::positive($amount);
+
+        return new self('overpayment_refund', [$member => -$amount], [self::cash(null, -$amount)], $event);
+    }
+
+    public static function bankCancel(?int $member, int $amount, int $event): self
+    {
+        self::positive($amount);
+
+        return new self('bank_cancellation', $member ? [$member => -$amount] : [], [self::cash(null, -$amount)], $event);
+    }
+
+    public static function adjustment(int $amount): self
+    {
+        abort_if($amount === 0, 422);
+
+        return new self('card_adjustment', [], [self::cash(null, $amount)]);
+    }
+
     private static function positive(int $amount): void
     {
         if ($amount <= 0) {

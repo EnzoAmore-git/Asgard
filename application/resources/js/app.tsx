@@ -40,7 +40,8 @@ function App() {
   const loadVersion = useRef(0);
 
   async function request<T>(path: string, method = 'GET', body?: unknown, extraHeaders: Record<string, string> = {}): Promise<T> {
-    const response = await fetch(path, { method, credentials: 'same-origin', headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': session?.csrf_token ?? '', ...extraHeaders }, body: body === undefined ? undefined : JSON.stringify(body) });
+    const multipart=body instanceof FormData;
+    const response = await fetch(path, { method, credentials: 'same-origin', headers: { Accept: 'application/json', ...(!multipart?{'Content-Type':'application/json'}:{}), 'X-CSRF-TOKEN': session?.csrf_token ?? '', ...extraHeaders }, body: multipart?body:body === undefined ? undefined : JSON.stringify(body) });
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));
       if (response.status === 401) { void boot(); throw new Error('Войдите снова, чтобы продолжить.'); }

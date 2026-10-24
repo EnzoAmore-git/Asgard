@@ -3,6 +3,7 @@
 use App\Models\Club;
 use App\Models\User;
 use App\Services\Clubs\ClubService;
+use App\Services\Finance\PaymentDemo;
 use App\Services\Training\TrainingDemo;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
@@ -74,3 +75,13 @@ Artisan::command('asgard:demo', function () {
     }
     $this->line('Локальные вымышленные данные. Оператор #'.$operator->id.', владелец #'.$owner->id.', участник #'.$member->id);
 })->purpose('Подготовить локальные вымышленные аккаунты и клуб без денежных операций');
+
+Artisan::command('asgard:payment-demo', function () {
+    if (! app()->environment('local')) {
+        $this->error('Учебные данные разрешены только локально.');
+
+        return 1;
+    }
+    $data = app(PaymentDemo::class)->create();
+    $this->line('Учебный клуб оплат #'.$data['club_id'].', владелец #'.$data['owner_id'].'. Только вымышленные данные.');
+})->purpose('Подготовить отдельный учебный клуб для оплат без реальных переводов');

@@ -1,6 +1,10 @@
 <?php
 
 return [
+    'file' => 'Прикрепите файл чека.',
+    'mimes' => 'Поддерживаются только JPG, PNG и PDF.',
+    'extensions' => 'Расширение чека должно быть JPG, JPEG, PNG или PDF.',
+    'uploaded' => 'Не удалось загрузить чек. Проверьте файл и соединение.',
     'date_format' => 'Проверьте дату в поле «:attribute».',
     'size' => ['string' => 'В поле «:attribute» нужно ровно :size символа.'],
     'required' => 'Заполните поле «:attribute».',
@@ -17,7 +21,7 @@ return [
     'timezone' => 'Выберите существующий часовой пояс.',
     'regex' => 'Проверьте формат поля «:attribute».',
     'min' => ['string' => 'В поле «:attribute» нужно не меньше :min символов.'],
-    'max' => ['string' => 'В поле «:attribute» допустимо не больше :max символов.', 'array' => 'В списке «:attribute» допустимо не больше :max значений.'],
+    'max' => ['file' => 'Чек должен быть не больше 10 МБ.', 'string' => 'В поле «:attribute» допустимо не больше :max символов.', 'array' => 'В списке «:attribute» допустимо не больше :max значений.'],
     'between' => ['numeric' => 'В поле «:attribute» нужно число от :min до :max.'],
-    'attributes' => ['title' => 'Название тренировки', 'local_start' => 'Дата и время', 'local_time' => 'Время клуба', 'responsible_membership_id' => 'Ответственный', 'effective_from' => 'Начало периода', 'amount_minor' => 'Сумма', 'version' => 'Версия данных', 'weekdays' => 'Дни недели', 'from' => 'Начальная дата', 'to' => 'Конечная дата', 'present_membership_ids' => 'Отметки присутствия', 'club_name' => 'Имя в клубе', 'owner_name' => 'Имя владельца', 'name' => 'Название', 'reason' => 'Причина', 'status' => 'Статус', 'frozen_until' => 'Пауза до', 'permissions' => 'Права', 'membership_id' => 'Участник', 'period_start_day' => 'Начало периода', 'currency' => 'Валюта'],
+    'attributes' => ['file' => 'Чек', 'custodian_membership_id' => 'Получатель наличных', 'receipt_id' => 'Номер поступления', 'date' => 'Дата оплаты', 'as_of' => 'Момент сверки', 'actual_minor' => 'Сумма по банку', 'comment' => 'Комментарий', 'decision' => 'Решение', 'day_of_month' => 'День месяца', 'month' => 'Месяц', 'title' => 'Название тренировки', 'local_start' => 'Дата и время', 'local_time' => 'Время клуба', 'responsible_membership_id' => 'Ответственный', 'effective_from' => 'Начало периода', 'amount_minor' => 'Сумма', 'version' => 'Версия данных', 'weekdays' => 'Дни недели', 'from' => 'Начальная дата', 'to' => 'Конечная дата', 'present_membership_ids' => 'Отметки присутствия', 'club_name' => 'Имя в клубе', 'owner_name' => 'Имя владельца', 'name' => 'Название', 'reason' => 'Причина', 'status' => 'Статус', 'frozen_until' => 'Пауза до', 'permissions' => 'Права', 'membership_id' => 'Участник', 'period_start_day' => 'Начало периода', 'currency' => 'Валюта'],
 ];

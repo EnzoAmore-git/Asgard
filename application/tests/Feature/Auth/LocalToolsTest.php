@@ -16,6 +16,7 @@ class LocalToolsTest extends TestCase
         $this->get('/local-access/'.str_repeat('a', 64))->assertNotFound();
         $this->artisan('asgard:local-access', ['user' => User::factory()->create()->id])->assertFailed();
         $this->artisan('asgard:training-demo')->assertFailed();
+        $this->artisan('asgard:payment-demo')->assertFailed();
     }
 
     public function test_local_access_is_one_time_and_requires_loopback(): void
